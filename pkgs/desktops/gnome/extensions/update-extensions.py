@@ -72,6 +72,7 @@ def fetch_extension_data(uuid: str, version: str) -> tuple[str, str]:
             logging.warning("Retrying")
 
     if process.returncode != 0:
+        # TODO: skip-failed
         raise Exception(
             "Retried 10 times, but still failed to download the extension. Exiting."
         )
@@ -205,6 +206,12 @@ def process_extension(extension: dict[str, Any]) -> dict[str, Any] | None:
     # Yeah, there are some extensions without any releases
     if not extension["shell_version_map"]:
         return None
+
+    # Skip extensions
+    if uuid == "wandathefish@ke.labrie.gmail.com":
+        logging.warning(f"Skiping extension '{uuid}'")
+        return None
+
     logging.info(f"Processing '{uuid}'")
 
     # Input is a mapping str -> { version: int, … }
